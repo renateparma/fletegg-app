@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _enviarCodigo() async {
     setState(() => _loading = true);
     try {
-      await FirebaseService.enviarCodigo(_phoneCtrl.text.trim());
+      _verificationId = await FirebaseService.enviarCodigo(_phoneCtrl.text.trim());
       setState(() {
         _codigoEnviado = true;
         _loading = false;

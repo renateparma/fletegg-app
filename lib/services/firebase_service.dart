@@ -1,29 +1,39 @@
 // lib/services/firebase_service.dart
 // Servicio de Firebase — auth, firestore, storage
 
+import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import '../models/usuario.dart';
 import '../models/viaje.dart';
 
 class FirebaseService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
-  static final FirebaseStorage _storage = FirebaseStorage.instance;
 
   // === AUTH ===
 
   static User? get currentUser => _auth.currentUser;
 
-  static Future<void> enviarCodigo(String telefono) async {
+  static String? _verificationId;
+
+  static Future<String> enviarCodigo(String telefono) async {
+    String? verId;
     await _auth.verifyPhoneNumber(
       phoneNumber: telefono,
       verificationCompleted: (_) {},
-      verificationFailed: (_) {},
-      codeSent: (_, __) {},
+      verificationFailed: (e) {
+        throw Exception(e.message);
+      },
+      codeSent: (id, __) {
+        verId = id;
+        _verificationId = id;
+      },
       codeAutoRetrievalTimeout: (_) {},
     );
+    // Esperar un momento para que codeSent se ejecute
+    await Future.delayed(const Duration(seconds: 1));
+    return _verificationId ?? verId ?? '';
   }
 
   static Future<UserCredential> verificarCodigo(
@@ -74,7 +84,6 @@ class FirebaseService {
     await _db.collection('viajes').doc(id).update(data);
   }
 
-  /// Viajes pendientes cercanos a una ubicación
   static Stream<List<Viaje>> streamViajesPendientes({
     required double lat,
     required double lng,
@@ -90,7 +99,6 @@ class FirebaseService {
       final viajes = snap.docs
           .map((doc) => Viaje.fromMap(doc.data(), doc.id))
           .where((v) {
-        // Filtro de distancia en memoria (no hay geoquery nativa en Firestore)
         final dist = _distanciaKm(lat, lng, v.origenLat, v.origenLng);
         return dist <= radioKm;
       }).toList();
@@ -99,7 +107,6 @@ class FirebaseService {
     });
   }
 
-  /// Viajes activos de un conductor
   static Stream<List<Viaje>> streamViajesConductor(String conductorId) {
     return _db
         .collection('viajes')
@@ -114,7 +121,6 @@ class FirebaseService {
             snap.docs.map((doc) => Viaje.fromMap(doc.data(), doc.id)).toList());
   }
 
-  /// Viajes de un cliente
   static Stream<List<Viaje>> streamViajesCliente(String clienteId) {
     return _db
         .collection('viajes')
@@ -126,7 +132,6 @@ class FirebaseService {
             snap.docs.map((doc) => Viaje.fromMap(doc.data(), doc.id)).toList());
   }
 
-  /// Historial de viajes completados
   static Future<List<Viaje>> getHistorialConductor(
     String conductorId, {
     int limit = 100,
@@ -155,13 +160,9 @@ class FirebaseService {
         .where('aprobado', isEqualTo: true)
         .snapshots()
         .map((snap) {
-      final conductores = snap.docs
+      return snap.docs
           .map((doc) => Usuario.fromMap(doc.data(), doc.id))
-          .where((c) {
-        // TODO: filtrar por ubicación actual cuando tengamos tracking de ubicación
-        return true;
-      }).toList();
-      return conductores;
+          .toList();
     });
   }
 
@@ -170,25 +171,15 @@ class FirebaseService {
   static double _distanciaKm(
     double lat1, double lng1, double lat2, double lng2,
   ) {
-    // Fórmula Haversine simplificada
-    const double r = 6371; // km
+    const double r = 6371;
     final dLat = _toRad(lat2 - lat1);
     final dLng = _toRad(lng2 - lng1);
-    final a = (dLat / 2).abs().sin() * (dLat / 2).abs().sin() +
-        _toRad(lat1).cos() * _toRad(lat2).cos() *
-        (dLng / 2).abs().sin() * (dLng / 2).abs().sin();
-    final c = 2 * (a).abs().sqrt().asin();
+    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_toRad(lat1)) * math.cos(_toRad(lat2)) *
+        math.sin(dLng / 2) * math.sin(dLng / 2);
+    final c = 2 * math.asin(math.sqrt(a));
     return r * c;
   }
 
-  static double _toRad(double deg) => deg * 0.017453292519943295;
-}
-
-// Extension para no depender de dart:math
-extension _NumExt on num {
-  double sin() => 0; // placeholder — usar dart:math en producción
-  double cos() => 0;
-  double sqrt() => 0;
-  double asin() => 0;
-  double abs() => toDouble().abs();
+  static double _toRad(double deg) => deg * math.pi / 180.0;
 }

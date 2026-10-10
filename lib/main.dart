@@ -10,6 +10,7 @@ import 'features/auth/auth_controller.dart';
 import 'features/auth/login_page.dart';
 import 'features/conductor/conductor_home_page.dart';
 import 'features/cliente/pedir_flete_page.dart';
+import 'models/usuario.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

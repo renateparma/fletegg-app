@@ -1,7 +1,7 @@
 // lib/models/pricing.dart
 // Cálculo de precios de flete
 
-import 'tipo_vehiculo_viaje.dart';
+import 'viaje.dart';
 
 class PricingConfig {
   // Base por vehículo
