@@ -20,9 +20,6 @@
         - name: Install dependencies
           run: flutter pub get
 
-        - name: Analyze
-          run: flutter analyze || true
-
         - name: Build APK
           run: flutter build apk --release
 
