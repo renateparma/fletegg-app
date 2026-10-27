@@ -8,9 +8,18 @@ allprojects {
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
-    afterEvaluate {
-        if (project.hasProperty("android")) {
-            project.android.compileSdk 36
+    project.plugins.withId("com.android.library") {
+        project.android {
+            if (compileSdk == null || compileSdk < 36) {
+                compileSdk 36
+            }
+        }
+    }
+    project.plugins.withId("com.android.application") {
+        project.android {
+            if (compileSdk == null || compileSdk < 36) {
+                compileSdk 36
+            }
         }
     }
 }
