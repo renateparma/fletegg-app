@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
+import '../../models/usuario.dart';
 import '../auth/auth_controller.dart';
 
 class PerfilConductorPage extends StatelessWidget {

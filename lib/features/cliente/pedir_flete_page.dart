@@ -158,7 +158,7 @@ class _PedirFletePageState extends State<PedirFletePage> {
       segments: const [
         ButtonSegment(value: TipoVehiculoViaje.camioneta, label: Text('🛻 Camioneta'), icon: Icon(Icons.local_shipping)),
         ButtonSegment(value: TipoVehiculoViaje.furgon, label: Text('🚐 Furgón'), icon: Icon(Icons.airport_shuttle)),
-        ButtonSegment(value: TipoVehiculoViaje.camion34, label: Text('🚚 3/4'), icon: Icon(Icons.truck)),
+        ButtonSegment(value: TipoVehiculoViaje.camion34, label: Text('🚚 3/4'), icon: Icon(Icons.local_shipping)),
       ],
       selected: {_vehiculo},
       onSelectionChanged: (s) => setState(() {
