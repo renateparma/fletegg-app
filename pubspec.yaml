@@ -18,7 +18,7 @@ dependencies:
   # Maps
   google_maps_flutter: ^2.9.0
   geocoding: ^5.0.0
-    geolocator: ^14.0.0
+  geolocator: ^14.0.0
 
   # Estado
   provider: ^6.1.2
