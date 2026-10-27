@@ -7,7 +7,7 @@ import '../config/maps_config.dart';
 import 'package:geocoding/geocoding.dart';
 
 class MapsService {
-  static const String apiKey = MapsConfig.apiKey;
+  // La API key vive en MapsConfig; geocoding usa el plugin nativo.
 
   /// Geocoding: dirección → coordenadas
   static Future<LatLng> geocode(String direccion) async {
