@@ -11,7 +11,8 @@ class MapsService {
 
   /// Geocoding: dirección → coordenadas
   static Future<LatLng> geocode(String direccion) async {
-    final locations = await locationFromAddress('$direccion, Santiago, Chile');
+    final geocoding = Geocoding();
+    final locations = await geocoding.locationFromAddress('$direccion, Santiago, Chile');
     if (locations.isEmpty) {
       throw Exception('Dirección no encontrada: $direccion');
     }
