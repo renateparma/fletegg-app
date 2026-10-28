@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../theme/colors.dart';
 import '../../models/viaje.dart';
+import '../../utils/formato.dart';
 
 class TrackingPage extends StatefulWidget {
   final String viajeId;
@@ -17,7 +18,6 @@ class TrackingPage extends StatefulWidget {
 
 class _TrackingPageState extends State<TrackingPage> {
   Viaje? _viaje;
-  GoogleMapController? _mapController;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,6 @@ class _TrackingPageState extends State<TrackingPage> {
                     target: LatLng(_viaje!.origenLat, _viaje!.origenLng),
                     zoom: 12,
                   ),
-                  onMapCreated: (c) => _mapController = c,
                   markers: _markers(),
                   polylines: _polyline(),
                   myLocationEnabled: true,
@@ -109,16 +108,21 @@ class _TrackingPageState extends State<TrackingPage> {
   }
 
   Widget _estadoCard() {
+    // Un viaje cancelado no "avanza" por los pasos aunque su índice sea mayor
+    final paso = _viaje!.estado == EstadoViaje.cancelado
+        ? EstadoViaje.pendiente.index
+        : _viaje!.estado.index;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _estadoStep('Flete confirmado', _viaje!.estado.index >= 0),
-            _estadoStep('Conductor en camino', _viaje!.estado.index >= 1),
-            _estadoStep('Carga en camino al destino', _viaje!.estado.index >= 3),
-            _estadoStep('Viaje completado', _viaje!.estado.index >= 4),
+            _estadoStep('Flete confirmado', paso >= EstadoViaje.pendiente.index),
+            _estadoStep('Conductor en camino', paso >= EstadoViaje.asignado.index),
+            _estadoStep('Conductor en el origen', paso >= EstadoViaje.enOrigen.index),
+            _estadoStep('Carga en camino al destino', paso >= EstadoViaje.enCamino.index),
+            _estadoStep('Viaje completado', paso >= EstadoViaje.completado.index),
           ],
         ),
       ),
@@ -146,11 +150,13 @@ class _TrackingPageState extends State<TrackingPage> {
   }
 
   Widget _conductorCard() {
+    final rating = _viaje!.conductorRating;
+    final ratingTxt = rating == null ? 'Nuevo' : '★ ${rating.toStringAsFixed(1)}';
     return Card(
       child: ListTile(
         leading: const CircleAvatar(backgroundColor: FleteGGColors.primary, child: Icon(Icons.person, color: Colors.white)),
         title: Text(_viaje!.conductorNombre ?? 'Conductor'),
-        subtitle: Text('★ ${(85).toStringAsFixed(1)} · ${_vehiculoLabel()}'),
+        subtitle: Text('$ratingTxt · ${_vehiculoLabel()}'),
         trailing: IconButton(icon: const Icon(Icons.phone), onPressed: () {}),
       ),
     );
@@ -191,7 +197,7 @@ class _TrackingPageState extends State<TrackingPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const Text('Total', style: TextStyle(fontWeight: FontWeight.bold)),
-                Text('\$${_viaje!.precioTotal}', style: const TextStyle(fontWeight: FontWeight.bold, color: FleteGGColors.primary)),
+                Text(fmtClp(_viaje!.precioTotal), style: const TextStyle(fontWeight: FontWeight.bold, color: FleteGGColors.primary)),
               ],
             ),
           ],

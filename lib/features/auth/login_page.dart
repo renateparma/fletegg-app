@@ -22,6 +22,13 @@ class _LoginPageState extends State<LoginPage> {
   bool _loading = false;
 
   @override
+  void dispose() {
+    _phoneCtrl.dispose();
+    _codeCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(

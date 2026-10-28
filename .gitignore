@@ -12,3 +12,6 @@ android/local.properties
 android/key.properties
 ios/Pods/
 ios/.symlinks/
+
+# Generado por flutter pub get / build
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java

@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../services/firebase_service.dart';
 import '../../models/viaje.dart';
+import '../../utils/formato.dart';
 import '../auth/auth_controller.dart';
 
 class GananciasPage extends StatelessWidget {
@@ -51,11 +52,11 @@ class GananciasPage extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(20),
             children: [
-              _bigCard('\$${_fmt(totalHoy)}', 'Hoy', FleteGGColors.primary),
+              _bigCard(fmtClp(totalHoy), 'Hoy', FleteGGColors.primary),
               const SizedBox(height: 12),
-              _bigCard('\$${_fmt(totalSemana)}', 'Últimos 7 días', Colors.blue),
+              _bigCard(fmtClp(totalSemana), 'Últimos 7 días', Colors.blue),
               const SizedBox(height: 12),
-              _bigCard('\$${_fmt(totalMes)}', 'Últimos 30 días', Colors.green),
+              _bigCard(fmtClp(totalMes), 'Últimos 30 días', Colors.green),
               const SizedBox(height: 24),
               const Text('Viajes completados', style: TextStyle(fontWeight: FontWeight.w700)),
               const SizedBox(height: 8),
@@ -65,7 +66,7 @@ class GananciasPage extends StatelessWidget {
                 subtitle: Text(v.completadoAt != null
                     ? '${v.completadoAt!.day}/${v.completadoAt!.month}/${v.completadoAt!.year}'
                     : ''),
-                trailing: Text('\$${v.conductorRecibe}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                trailing: Text(fmtClp(v.conductorRecibe), style: const TextStyle(fontWeight: FontWeight.bold)),
               )),
               if (viajes.isEmpty)
                 const Center(child: Padding(
@@ -97,6 +98,4 @@ class GananciasPage extends StatelessWidget {
       ),
     );
   }
-
-  String _fmt(int n) => n.toString().replaceAll(RegExp(r'\B(?=(\d{3})+(?!\d))'), '.');
 }

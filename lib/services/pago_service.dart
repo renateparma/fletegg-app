@@ -25,7 +25,7 @@ class PagoService {
     //   "amount": monto,
     //   "currency": "CLP",
     //   "email": emailCliente,
-    //   "urlConfirmation": "https://eggclaw.cl/fletegg/api/flow/confirm",
+    //   "urlConfirmation": "https://eggclaw.cl/fletegg/api/flow/webhook",
     //   "urlReturn": "https://eggclaw.cl/fletegg/pago-ok",
     //   "optional": jsonEncode({"viajeId": viajeId})
     // }

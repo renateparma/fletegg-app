@@ -97,20 +97,7 @@ class AuthController extends ChangeNotifier {
       _user!.uid,
       {'enLinea': nuevo},
     );
-    _perfil = Usuario(
-      id: _perfil!.id,
-      nombre: _perfil!.nombre,
-      telefono: _perfil!.telefono,
-      tipo: _perfil!.tipo,
-      rating: _perfil!.rating,
-      totalViajes: _perfil!.totalViajes,
-      tipoVehiculo: _perfil!.tipoVehiculo,
-      patente: _perfil!.patente,
-      zona: _perfil!.zona,
-      disponibilidad: _perfil!.disponibilidad,
-      aprobado: _perfil!.aprobado,
-      enLinea: nuevo,
-    );
+    _perfil = _perfil!.copyWith(enLinea: nuevo);
     notifyListeners();
   }
 

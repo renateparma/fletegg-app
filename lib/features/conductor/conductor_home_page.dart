@@ -9,6 +9,7 @@ import '../../theme/colors.dart';
 import '../../services/firebase_service.dart';
 import '../../models/viaje.dart';
 import '../../models/usuario.dart';
+import '../../utils/formato.dart';
 import '../auth/auth_controller.dart';
 import 'ganancias_page.dart';
 import 'perfil_conductor_page.dart';
@@ -32,7 +33,17 @@ class _ConductorHomePageState extends State<ConductorHomePage> {
 
   Future<void> _obtenerUbicacion() async {
     final pos = await Geolocator.getCurrentPosition();
-    setState(() => _miUbicacion = LatLng(pos.latitude, pos.longitude));
+    final ubicacion = LatLng(pos.latitude, pos.longitude);
+    if (!mounted) return;
+    setState(() => _miUbicacion = ubicacion);
+
+    // Publicar la ubicación para que los clientes puedan ver conductores
+    // cercanos (streamConductoresEnLinea filtra por radio con lat/lng).
+    final uid = context.read<AuthController>().user?.uid;
+    if (uid != null) {
+      FirebaseService.actualizarUbicacionConductor(uid, ubicacion)
+          .catchError((Object e) => debugPrint('No pude guardar ubicación: $e'));
+    }
   }
 
   @override
@@ -100,7 +111,7 @@ class _ConductorHomePageState extends State<ConductorHomePage> {
         actions: [
           Switch(
             value: perfil.enLinea ?? false,
-            activeColor: FleteGGColors.success,
+            activeThumbColor: FleteGGColors.success,
             onChanged: (_) => auth.toggleEnLinea(),
           ),
         ],
@@ -215,7 +226,7 @@ class _ConductorHomePageState extends State<ConductorHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('\$${viaje.precioTotal}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: FleteGGColors.primary)),
+                Text(fmtClp(viaje.precioTotal), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: FleteGGColors.primary)),
                 Text('${viaje.distanciaKm.toStringAsFixed(1)} km · ~${viaje.tiempoEstimadoMin} min', style: const TextStyle(color: Colors.grey, fontSize: 13)),
               ],
             ),
@@ -244,9 +255,12 @@ class _ConductorHomePageState extends State<ConductorHomePage> {
 
   Future<void> _aceptarViaje(Viaje viaje) async {
     final auth = context.read<AuthController>();
+    final rating = auth.perfil!.rating ?? 0;
     await FirebaseService.actualizarViaje(viaje.id, {
       'conductorId': auth.user!.uid,
       'conductorNombre': auth.perfil!.nombre,
+      // Sin rating (conductor nuevo) se omite: el cliente ve "Nuevo"
+      if (rating > 0) 'conductorRating': rating,
       'estado': EstadoViaje.asignado.name,
       'aceptadoAt': DateTime.now(),
     });

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FleteGG — Tu flete en minutos</title>
+  <meta name="description" content="Fletes en Santiago, al toque. Pides desde la app, un conductor cercano acepta y sigues tu carga en tiempo real. Precio claro antes de pedir.">
+  <meta name="theme-color" content="#0A0A0A">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="FleteGG">
+  <meta property="og:title" content="FleteGG — Tu flete en minutos">
+  <meta property="og:description" content="Fletes en Santiago, al toque. Pides desde la app, un conductor cercano acepta y sigues tu carga en tiempo real.">
+  <meta property="og:url" content="https://eggclaw.cl/fletegg/">
+  <meta property="og:locale" content="es_CL">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23FF6B00'/%3E%3Cpath fill='%230A0A0A' d='M12 20h26v22H12zM38 27h10l6 7v8H38z'/%3E%3Ccircle cx='21' cy='46' r='5' fill='%230A0A0A' stroke='%23FF6B00' stroke-width='2'/%3E%3Ccircle cx='46' cy='46' r='5' fill='%230A0A0A' stroke='%23FF6B00' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+  <header class="site-header" id="top">
+    <div class="container header-inner">
+      <a class="logo" href="#top" aria-label="FleteGG, inicio">
+        <svg class="logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/>
+          <path d="M15 18H9"/>
+          <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/>
+          <circle cx="17" cy="18" r="2"/>
+          <circle cx="7" cy="18" r="2"/>
+        </svg>
+        <span class="logo-text">Flete<span class="logo-gg">GG</span></span>
+      </a>
+      <nav class="site-nav" aria-label="Secciones">
+        <a href="#conductores">Conductores</a>
+        <a href="#clientes">Clientes</a>
+        <a href="#como-funciona">Cómo funciona</a>
+      </nav>
+      <a class="btn btn-primary btn-sm" href="#conductores">Soy conductor</a>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <h1 id="hero-title" class="hero-title">
+            <span class="hero-brand">Flete<span class="logo-gg">GG</span></span>
+            <span class="hero-claim">Tu flete en minutos</span>
+          </h1>
+          <p class="hero-sub">Fletes en Santiago, al toque. Pides desde la app, un conductor cercano acepta, y sigues tu carga en tiempo real.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary btn-lg" href="#conductores">Quiero manejar con FleteGG</a>
+            <a class="btn btn-outline btn-lg" href="#clientes">Soy cliente</a>
+          </div>
+          <ul class="chips" aria-label="Por qué confiar en FleteGG">
+            <li class="chip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+              Precio claro antes de pedir
+            </li>
+            <li class="chip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+              Conductores verificados
+            </li>
+            <li class="chip">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+              Pago por Flow.cl
+            </li>
+          </ul>
+        </div>
+
+        <div class="hero-card" aria-hidden="true">
+          <div class="hero-card-status"><span class="live-dot"></span>Conductor en camino · 4 min</div>
+          <div class="hero-card-route">
+            <div class="route-point">
+              <span class="route-label">Origen</span>
+              <strong>Providencia</strong>
+            </div>
+            <div class="route-line"></div>
+            <div class="route-point">
+              <span class="route-label">Destino</span>
+              <strong>Maipú</strong>
+            </div>
+          </div>
+          <div class="hero-card-foot">
+            <span>Camioneta · 13 km</span>
+            <strong>$14.500</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal" id="como-funciona" aria-labelledby="como-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Cómo funciona</p>
+          <h2 id="como-title">Tres pasos y tu carga va en camino</h2>
+          <p class="lead">Sin llamadas, sin regateo. Todo desde el celular.</p>
+        </div>
+
+        <ol class="steps">
+          <li class="card step">
+            <span class="step-num" aria-hidden="true">1</span>
+            <h3>Pides</h3>
+            <p>Origen, destino y qué llevas. Ves el precio antes de confirmar.</p>
+          </li>
+          <li class="card step">
+            <span class="step-num" aria-hidden="true">2</span>
+            <h3>Un conductor acepta</h3>
+            <p>Camioneta, furgón o camión 3/4, según lo que necesites mover.</p>
+          </li>
+          <li class="card step">
+            <span class="step-num" aria-hidden="true">3</span>
+            <h3>Sigues tu carga</h3>
+            <p>Tracking en vivo y pago seguro al terminar el viaje.</p>
+          </li>
+        </ol>
+
+        <div class="pricing">
+          <h3 class="pricing-title">Precios de referencia</h3>
+          <div class="price-grid">
+            <article class="card price-card">
+              <h4>Camioneta</h4>
+              <p class="price-base"><span class="price-from">desde</span> $8.000</p>
+              <p class="price-km">+ $500 por km</p>
+              <p class="price-note">Cajas, electrodomésticos, muebles chicos.</p>
+            </article>
+            <article class="card price-card">
+              <h4>Furgón</h4>
+              <p class="price-base"><span class="price-from">desde</span> $12.000</p>
+              <p class="price-km">+ $700 por km</p>
+              <p class="price-note">Carga cerrada, mudanzas de un ambiente.</p>
+            </article>
+            <article class="card price-card">
+              <h4>Camión 3/4</h4>
+              <p class="price-base"><span class="price-from">desde</span> $18.000</p>
+              <p class="price-km">+ $900 por km</p>
+              <p class="price-note">Mudanzas completas, pallets, volumen.</p>
+            </article>
+          </div>
+          <p class="pricing-note">Valores referenciales dentro de la Región Metropolitana. El precio exacto lo ves en la app antes de pedir.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt reveal" id="conductores" aria-labelledby="conductores-title">
+      <div class="container conductores-inner">
+        <div class="conductores-copy">
+          <p class="eyebrow">Conductores</p>
+          <h2 id="conductores-title">Maneja con FleteGG</h2>
+          <p class="lead">Tienes camioneta, furgón o camión 3/4 y quieres sacarle más provecho. Partimos con un piloto en Santiago y buscamos a los primeros conductores.</p>
+          <ul class="benefits">
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+              <span><strong>0% comisión los primeros 30 días</strong> (piloto)</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Tú eliges cuándo conectarte</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Pagos semanales a tu cuenta</span>
+            </li>
+            <li>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Soporte por WhatsApp</span>
+            </li>
+          </ul>
+        </div>
+
+        <form id="form-afiliar" class="card form" novalidate aria-labelledby="form-afiliar-title">
+          <h3 id="form-afiliar-title" class="form-title">Afíliate en 1 minuto</h3>
+
+          <div class="form-alert" id="afiliar-alert" role="alert" hidden></div>
+
+          <div class="field">
+            <label for="f-nombre">Nombre completo</label>
+            <input id="f-nombre" name="nombre" type="text" placeholder="Juan Pérez" maxlength="80" autocomplete="name" required aria-describedby="err-nombre">
+            <p class="field-error" id="err-nombre" aria-live="polite"></p>
+          </div>
+
+          <div class="field">
+            <label for="f-telefono">Celular (WhatsApp)</label>
+            <input id="f-telefono" name="telefono" type="tel" inputmode="tel" placeholder="+56 9 1234 5678" autocomplete="tel" required aria-describedby="err-telefono">
+            <p class="field-error" id="err-telefono" aria-live="polite"></p>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-tipoVehiculo">Vehículo</label>
+              <select id="f-tipoVehiculo" name="tipoVehiculo" required aria-describedby="err-tipoVehiculo">
+                <option value="" disabled selected>Elige tu vehículo</option>
+                <option value="camioneta">Camioneta</option>
+                <option value="furgon">Furgón cerrado</option>
+                <option value="camion34">Camión 3/4</option>
+                <option value="varios">Tengo varios vehículos</option>
+              </select>
+              <p class="field-error" id="err-tipoVehiculo" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="f-patente">Patente <span class="label-opt">opcional</span></label>
+              <input id="f-patente" name="patente" type="text" class="input-upper" placeholder="ABCD12" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="help-patente err-patente">
+              <p class="field-help" id="help-patente">Opcional, pero acelera tu aprobación</p>
+              <p class="field-error" id="err-patente" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-zona">Zona donde trabajas</label>
+              <select id="f-zona" name="zona" required aria-describedby="err-zona">
+                <option value="" disabled selected>Elige tu zona</option>
+                <option value="centro">Santiago Centro</option>
+                <option value="oriente">Oriente (Providencia, Las Condes, Ñuñoa…)</option>
+                <option value="sur">Sur (San Miguel, La Florida, Puente Alto…)</option>
+                <option value="norte">Norte (Independencia, Quilicura, Huechuraba…)</option>
+                <option value="poniente">Poniente (Maipú, Pudahuel, Cerrillos…)</option>
+                <option value="todaRm">Toda la Región Metropolitana</option>
+              </select>
+              <p class="field-error" id="err-zona" aria-live="polite"></p>
+            </div>
+
+            <div class="field">
+              <label for="f-disponibilidad">Disponibilidad</label>
+              <select id="f-disponibilidad" name="disponibilidad" required aria-describedby="err-disponibilidad">
+                <option value="" disabled selected>Elige tu disponibilidad</option>
+                <option value="fullTime">Full time</option>
+                <option value="finesSemana">Fines de semana</option>
+                <option value="eventos">Solo eventos / fechas puntuales</option>
+                <option value="flexible">Flexible</option>
+              </select>
+              <p class="field-error" id="err-disponibilidad" aria-live="polite"></p>
+            </div>
+          </div>
+
+          <div class="field-alt" aria-hidden="true">
+            <label for="f-website">Sitio web</label>
+            <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg btn-block" id="afiliar-submit">Quiero afiliarme</button>
+          <p class="small-print">Te contactamos por WhatsApp en menos de 24 h. Sin costo de inscripción.</p>
+        </form>
+      </div>
+    </section>
+
+    <section class="section reveal" id="clientes" aria-labelledby="clientes-title">
+      <div class="container">
+        <div class="card clientes-card">
+          <span class="badge">Próximamente</span>
+          <h2 id="clientes-title">¿Necesitas un flete?</h2>
+          <p class="lead">La app para clientes llega pronto a Android. Déjanos tu correo y te avisamos.</p>
+
+          <form id="form-waitlist" class="waitlist" novalidate>
+            <label for="w-email" class="sr-only">Tu correo</label>
+            <input id="w-email" name="email" type="email" inputmode="email" placeholder="tu@correo.cl" autocomplete="email" required aria-describedby="err-email">
+            <button type="submit" class="btn btn-primary" id="waitlist-submit">Avísame</button>
+            <p class="field-error" id="err-email" aria-live="polite"></p>
+          </form>
+          <p class="waitlist-ok" id="waitlist-ok" role="status" hidden>¡Listo! Te avisamos cuando esté disponible.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="footer-brand">
+        <span class="logo-text">Flete<span class="logo-gg">GG</span></span>
+        <span class="footer-sep">·</span> un producto de EggClaw Solutions
+        <span class="footer-sep">·</span> Santiago, Chile
+      </p>
+      <p class="footer-meta">
+        <span>© <span id="year">2026</span></span>
+        <a href="mailto:hola@eggclaw.cl">hola@eggclaw.cl</a>
+        <a href="#">Términos</a>
+        <a href="#">Privacidad</a>
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -25,6 +25,10 @@ class Usuario {
   final bool? aprobado;
   final bool? enLinea;
 
+  // Última ubicación reportada (solo conductor en línea)
+  final double? lat;
+  final double? lng;
+
   Usuario({
     required this.id,
     required this.nombre,
@@ -38,7 +42,42 @@ class Usuario {
     this.disponibilidad,
     this.aprobado,
     this.enLinea,
+    this.lat,
+    this.lng,
   });
+
+  Usuario copyWith({
+    String? nombre,
+    String? telefono,
+    TipoUsuario? tipo,
+    double? rating,
+    int? totalViajes,
+    TipoVehiculo? tipoVehiculo,
+    String? patente,
+    ZonaOperacion? zona,
+    Disponibilidad? disponibilidad,
+    bool? aprobado,
+    bool? enLinea,
+    double? lat,
+    double? lng,
+  }) {
+    return Usuario(
+      id: id,
+      nombre: nombre ?? this.nombre,
+      telefono: telefono ?? this.telefono,
+      tipo: tipo ?? this.tipo,
+      rating: rating ?? this.rating,
+      totalViajes: totalViajes ?? this.totalViajes,
+      tipoVehiculo: tipoVehiculo ?? this.tipoVehiculo,
+      patente: patente ?? this.patente,
+      zona: zona ?? this.zona,
+      disponibilidad: disponibilidad ?? this.disponibilidad,
+      aprobado: aprobado ?? this.aprobado,
+      enLinea: enLinea ?? this.enLinea,
+      lat: lat ?? this.lat,
+      lng: lng ?? this.lng,
+    );
+  }
 
   factory Usuario.fromMap(Map<String, dynamic> map, String id) {
     return Usuario(
@@ -72,6 +111,8 @@ class Usuario {
           : null,
       aprobado: map['aprobado'] ?? false,
       enLinea: map['enLinea'] ?? false,
+      lat: (map['lat'] as num?)?.toDouble(),
+      lng: (map['lng'] as num?)?.toDouble(),
     );
   }
 
@@ -88,6 +129,8 @@ class Usuario {
       if (disponibilidad != null) 'disponibilidad': disponibilidad!.name,
       'aprobado': aprobado ?? false,
       'enLinea': enLinea ?? false,
+      if (lat != null) 'lat': lat,
+      if (lng != null) 'lng': lng,
     };
   }
 }

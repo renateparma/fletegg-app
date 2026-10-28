@@ -3,11 +3,11 @@
 
 import 'dart:math';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../config/maps_config.dart';
 import 'package:geocoding/geocoding.dart';
 
 class MapsService {
-  // La API key vive en MapsConfig; geocoding usa el plugin nativo.
+  // La API key se configura en las plataformas nativas (AndroidManifest /
+  // AppDelegate); el geocoding usa el plugin nativo, no requiere key en Dart.
 
   /// Geocoding: dirección → coordenadas
   static Future<LatLng> geocode(String direccion) async {

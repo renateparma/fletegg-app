@@ -18,6 +18,8 @@ class Viaje {
   final String clienteNombre;
   final String? conductorId;
   final String? conductorNombre;
+  /// Rating del conductor al momento de aceptar (null = conductor nuevo)
+  final double? conductorRating;
 
   // Origen
   final String origenDireccion;
@@ -56,6 +58,7 @@ class Viaje {
     required this.clienteNombre,
     this.conductorId,
     this.conductorNombre,
+    this.conductorRating,
     required this.origenDireccion,
     required this.origenLat,
     required this.origenLng,
@@ -84,6 +87,7 @@ class Viaje {
       clienteNombre: map['clienteNombre'] ?? '',
       conductorId: map['conductorId'],
       conductorNombre: map['conductorNombre'],
+      conductorRating: (map['conductorRating'] as num?)?.toDouble(),
       origenDireccion: map['origenDireccion'] ?? '',
       origenLat: (map['origenLat'] ?? 0).toDouble(),
       origenLng: (map['origenLng'] ?? 0).toDouble(),
@@ -118,6 +122,7 @@ class Viaje {
       'clienteNombre': clienteNombre,
       if (conductorId != null) 'conductorId': conductorId,
       if (conductorNombre != null) 'conductorNombre': conductorNombre,
+      if (conductorRating != null) 'conductorRating': conductorRating,
       'origenDireccion': origenDireccion,
       'origenLat': origenLat,
       'origenLng': origenLng,

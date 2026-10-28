@@ -1,11 +1,13 @@
 // lib/services/firebase_service.dart
 // Servicio de Firebase — auth, firestore, storage
 
-import 'dart:math' as math;
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../models/usuario.dart';
 import '../models/viaje.dart';
+import 'maps_service.dart';
 
 class FirebaseService {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,25 +17,41 @@ class FirebaseService {
 
   static User? get currentUser => _auth.currentUser;
 
-  static String? _verificationId;
+  /// Envía el SMS y resuelve con el `verificationId` cuando Firebase confirma
+  /// el envío (`codeSent`). Falla con la causa real si `verificationFailed`.
+  static Future<String> enviarCodigo(String telefono) {
+    final completer = Completer<String>();
 
-  static Future<String> enviarCodigo(String telefono) async {
-    String? verId;
-    await _auth.verifyPhoneNumber(
+    _auth.verifyPhoneNumber(
       phoneNumber: telefono,
-      verificationCompleted: (_) {},
-      verificationFailed: (e) {
-        throw Exception(e.message);
+      verificationCompleted: (credential) async {
+        // Android puede verificar solo (auto-retrieval / instant verification)
+        // antes de que llegue codeSent. Iniciamos sesión y resolvemos para que
+        // la UI no se quede esperando; AuthController detecta el login.
+        try {
+          await _auth.signInWithCredential(credential);
+          if (!completer.isCompleted) {
+            completer.complete(credential.verificationId ?? '');
+          }
+        } catch (e) {
+          if (!completer.isCompleted) completer.completeError(e);
+        }
       },
-      codeSent: (id, __) {
-        verId = id;
-        _verificationId = id;
+      verificationFailed: (e) {
+        if (!completer.isCompleted) {
+          completer.completeError(Exception(e.message ?? e.code));
+        }
+      },
+      codeSent: (verificationId, _) {
+        if (!completer.isCompleted) completer.complete(verificationId);
       },
       codeAutoRetrievalTimeout: (_) {},
-    );
-    // Esperar un momento para que codeSent se ejecute
-    await Future.delayed(const Duration(seconds: 1));
-    return _verificationId ?? verId ?? '';
+    ).catchError((Object e) {
+      // Errores síncronos del plugin (p. ej. número mal formado)
+      if (!completer.isCompleted) completer.completeError(e);
+    });
+
+    return completer.future;
   }
 
   static Future<UserCredential> verificarCodigo(
@@ -96,10 +114,14 @@ class FirebaseService {
         .where('vehiculoRequerido', isEqualTo: vehiculo.name)
         .snapshots()
         .map((snap) {
+      final aqui = LatLng(lat, lng);
       final viajes = snap.docs
           .map((doc) => Viaje.fromMap(doc.data(), doc.id))
           .where((v) {
-        final dist = _distanciaKm(lat, lng, v.origenLat, v.origenLng);
+        final dist = MapsService.distanciaKm(
+          aqui,
+          LatLng(v.origenLat, v.origenLng),
+        );
         return dist <= radioKm;
       }).toList();
       viajes.sort((a, b) => a.createdAt.compareTo(b.createdAt));
@@ -148,6 +170,21 @@ class FirebaseService {
 
   // === CONDUCTORES CERCANOS ===
 
+  /// Guarda la última ubicación conocida del conductor (campos `lat`/`lng`),
+  /// necesaria para que [streamConductoresEnLinea] pueda filtrar por radio.
+  static Future<void> actualizarUbicacionConductor(
+    String id,
+    LatLng posicion,
+  ) async {
+    await _db.collection('usuarios').doc(id).update({
+      'lat': posicion.latitude,
+      'lng': posicion.longitude,
+      'ubicacionAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Conductores aprobados y en línea dentro de [radioKm] de (lat, lng).
+  /// Los conductores sin ubicación reportada quedan fuera.
   static Stream<List<Usuario>> streamConductoresEnLinea({
     required double lat,
     required double lng,
@@ -160,26 +197,14 @@ class FirebaseService {
         .where('aprobado', isEqualTo: true)
         .snapshots()
         .map((snap) {
+      final aqui = LatLng(lat, lng);
       return snap.docs
           .map((doc) => Usuario.fromMap(doc.data(), doc.id))
-          .toList();
+          .where((u) {
+        if (u.lat == null || u.lng == null) return false;
+        final dist = MapsService.distanciaKm(aqui, LatLng(u.lat!, u.lng!));
+        return dist <= radioKm;
+      }).toList();
     });
   }
-
-  // === HELPERS ===
-
-  static double _distanciaKm(
-    double lat1, double lng1, double lat2, double lng2,
-  ) {
-    const double r = 6371;
-    final dLat = _toRad(lat2 - lat1);
-    final dLng = _toRad(lng2 - lng1);
-    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
-        math.cos(_toRad(lat1)) * math.cos(_toRad(lat2)) *
-        math.sin(dLng / 2) * math.sin(dLng / 2);
-    final c = 2 * math.asin(math.sqrt(a));
-    return r * c;
-  }
-
-  static double _toRad(double deg) => deg * math.pi / 180.0;
 }

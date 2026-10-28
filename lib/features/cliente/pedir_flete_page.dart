@@ -4,12 +4,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geocoding/geocoding.dart';
 import '../../theme/colors.dart';
 import '../../services/firebase_service.dart';
 import '../../services/maps_service.dart';
 import '../../models/viaje.dart';
 import '../../models/pricing.dart';
+import '../../utils/formato.dart';
 import '../auth/auth_controller.dart';
 import 'tracking_page.dart';
 
@@ -30,6 +30,15 @@ class _PedirFletePageState extends State<PedirFletePage> {
   double? _distancia;
   PricingResult? _precio;
   bool _calculando = false;
+  bool _confirmando = false;
+
+  @override
+  void dispose() {
+    _origenCtrl.dispose();
+    _destinoCtrl.dispose();
+    _cargaCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +116,7 @@ class _PedirFletePageState extends State<PedirFletePage> {
                 child: Column(
                   children: [
                     const Text('Total estimado', style: TextStyle(color: Colors.grey)),
-                    Text('\$${_precio!.precioTotal}', style: const TextStyle(fontSize: 42, fontWeight: FontWeight.w900, color: FleteGGColors.primary)),
+                    Text(fmtClp(_precio!.precioTotal), style: const TextStyle(fontSize: 42, fontWeight: FontWeight.w900, color: FleteGGColors.primary)),
                     Text('${_vehiculoLabel(_vehiculo)} · ${_distancia!.toStringAsFixed(1)} km · ~${MapsService.tiempoEstimadoMin(_distancia!)} min', style: const TextStyle(color: Colors.grey)),
                     const SizedBox(height: 12),
                     // Desglose
@@ -115,14 +124,14 @@ class _PedirFletePageState extends State<PedirFletePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Base'),
-                        Text('\$${_precio!.base}'),
+                        Text(fmtClp(_precio!.base)),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('${_distancia!.toStringAsFixed(1)} km × \$${PricingConfig.porKm[_vehiculo]}'),
-                        Text('\$${_precio!.costoDistancia}'),
+                        Text('${_distancia!.toStringAsFixed(1)} km × ${fmtClp(PricingConfig.porKm[_vehiculo]!)}'),
+                        Text(fmtClp(_precio!.costoDistancia)),
                       ],
                     ),
                     const Divider(),
@@ -130,7 +139,7 @@ class _PedirFletePageState extends State<PedirFletePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('Total', style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text('\$${_precio!.precioTotal}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text(fmtClp(_precio!.precioTotal), style: const TextStyle(fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ],
@@ -138,9 +147,15 @@ class _PedirFletePageState extends State<PedirFletePage> {
               ),
               const SizedBox(height: 16),
               ElevatedButton.icon(
-                onPressed: _confirmarFlete,
-                icon: const Icon(Icons.check_circle),
-                label: const Text('CONFIRMAR FLETE'),
+                onPressed: _confirmando ? null : _confirmarFlete,
+                icon: _confirmando
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Icon(Icons.check_circle),
+                label: Text(_confirmando ? 'CONFIRMANDO...' : 'CONFIRMAR FLETE'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: FleteGGColors.success,
                   minimumSize: const Size.fromHeight(56),
@@ -198,7 +213,10 @@ class _PedirFletePageState extends State<PedirFletePage> {
 
   Future<void> _confirmarFlete() async {
     final auth = context.read<AuthController>();
+    if (_confirmando) return;
     if (_precio == null || _origen == null || _destino == null) return;
+
+    setState(() => _confirmando = true);
 
     final viaje = Viaje(
       id: '',
@@ -221,15 +239,23 @@ class _PedirFletePageState extends State<PedirFletePage> {
       createdAt: DateTime.now(),
     );
 
-    final viajeId = await FirebaseService.crearViaje(viaje);
-
-    if (mounted) {
+    try {
+      final viajeId = await FirebaseService.crearViaje(viaje);
+      if (!mounted) return;
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => TrackingPage(viajeId: viajeId),
         ),
       );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No pude crear el flete: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _confirmando = false);
     }
   }
 
